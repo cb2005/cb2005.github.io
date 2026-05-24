@@ -1,0 +1,288 @@
+html {
+  font-size: 16px;
+  /*background-image: linear-gradient(180deg, #8f001a 50%, #b40323);*/
+  background-color: var(--background-color);
+  color: rgb(255, 255, 255);
+  min-height: 100%;
+  height: fit-content;
+  font-size: 2vw;
+  margin: 0px;
+  padding: 0px;
+}
+
+main {
+  margin: 0px;
+  padding: 0px;
+  overflow-y: hidden;
+}
+
+p, h1, h2, h3 {
+  margin: 0;
+}
+
+.title-card {
+  display: flex;
+  flex-direction: row;
+  width: fit-content;
+  justify-self: center;
+  gap: 13vh;
+  padding: 30px;
+}
+
+.title-info {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  width: fit-content;
+  margin-left: 5vw;
+  align-items: start;
+
+}
+
+.title-school {
+  font-size: 5vh;
+  font-weight:  normal
+}
+
+#title-image {
+  width: 30vh;
+  border-radius: var(--border-radius);
+  margin-right: 5vw;
+}
+
+
+
+#svg-image, 
+#svg-image *{
+  filter: invert(1);
+  width: 10vw;
+  align-self: center;
+
+}
+
+.about-me-title {
+  width:fit-content;
+}
+
+.about-me-text {
+  width: 22vw;
+}
+
+
+h1 {
+  margin-bottom: 10px;
+}
+
+.container {
+  position: relative;
+  border-radius: var(--border-radius);
+  padding: var(--container-padding);
+  background-color: var(--background-color);
+  margin-top: 15px;
+  margin-bottom: 30px;
+  justify-self: center;
+  width: fit-content;
+  max-width: 90%;
+}
+
+.container::before {
+  position: absolute;
+  display: block;
+  content: " ";
+  background-image: conic-gradient(from var(--angle),blue, red, blue);
+  width: calc(100% + var(--container-border-size) * 2);
+  height: calc(100% + var(--container-border-size) * 2);
+  top: calc(0px - var(--container-border-size));
+  left: calc(0px - var(--container-border-size));
+  border-radius: var(--border-radius);
+  z-index: -1;
+  animation: spin 7s linear infinite;
+}
+
+#experience::before {
+  animation-direction: reverse;
+}
+
+#experience {
+  max-width: 400px;
+}
+
+.cards {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  gap:.5vw;
+  align-self: center;
+  flex-wrap: wrap;
+  justify-self: start;
+  justify-content: start;
+  width: 100%;
+
+}
+
+h3 {
+  text-align: center;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  background-color: var(--card-color);
+  border-radius: var(--border-radius);
+  padding: 2vw;
+  align-items: center;
+}
+
+.card-image {
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  padding: 2vw;
+  padding-bottom: 0;
+  padding-top: 0;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  width: 15vw;
+}
+
+#experience-title {
+  margin-top: 30px;
+}
+
+h2 {
+  margin-bottom: 5px;
+}
+
+#experience-card {
+  width: 30vw;
+  max-width: 500px;
+}
+
+#workflow-title {
+  margin-top: 30px;
+}
+
+#workflow-card {
+  max-width: 19vw;
+}
+
+
+
+
+
+#case-studies-container {
+  margin-top: 35px;
+}
+
+#case-studies-container::before {
+  animation-direction: reverse;
+}
+
+.entry-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1vw;
+  margin-top: 10px;
+}
+
+.entry {
+  display: flex;
+  flex-direction: row;
+  background-color: var(--card-color);
+  border-radius: var(--border-radius);
+  justify-items: center;
+  align-items: center;
+  gap: 1vw;
+  width: 60vw;
+}
+
+#entry-row {
+  display: flex;
+  flex-direction: row;
+  gap:1vw;
+}
+
+.entry:hover {
+  cursor: pointer;
+  background-color: var(--card-color-hover);
+}
+
+.entry-image {
+  display: inline-block;
+  width: 15vw;
+  padding: 2vw;
+}
+
+.entry-text {
+  display: inline-block;
+  text-align: center;
+  height: fit-content;
+  font-size: 2vw;
+}
+
+
+#coming-soon-container {
+  justify-items: center;
+  padding: 5vw;
+}
+
+#coming-soon-container h2 {
+  font-size: 5vw;
+}
+
+#coming-soon-container p {
+  font-size: 3vw;
+}
+
+.coming-soon-body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  justify-items: center;
+  align-content: center;
+}
+
+.coming-soon-html {
+  background-image: linear-gradient(330deg, rgb(19, 0, 44) 25%, rgb(0, 0, 0));
+;
+}
+
+
+
+
+/* -------------------------------- Variables and Animations --------------------------------*/
+:root {
+  --container-padding: 15px;
+  --container-border-size: .15rem;
+  --border-radius: 3vw;
+  --card-color: rgb(25, 25, 60);
+  --card-color-hover: rgb(29, 29, 70);
+  --background-color: rgb(0, 11, 43);
+  --uottawa-red: #8f001a;
+  --svg-color: white;
+}
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes spin {
+  0%{
+    --angle: 0deg;
+  }
+  100% {
+    --angle: 360deg;
+  }
+}
+
+
+
+
+
+
