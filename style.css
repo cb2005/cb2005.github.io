@@ -1,0 +1,183 @@
+html {
+  font-size: 16px;
+  background-image: linear-gradient(330deg, rgb(19, 0, 44), rgb(0, 0, 0));
+  color: rgb(203, 203, 203);
+  min-height: 100%;
+  height: fit-content;
+  font-size: 2vh;
+  margin: 0px;
+  padding: 0px;
+}
+
+main {
+  margin: 0px;
+  overflow-y: hidden;
+}
+
+p, h1, h2, h3 {
+  margin: 0;
+}
+
+h1 {
+  text-align: center;
+  margin: 30px;
+  margin-bottom: 15px;
+}
+
+.container {
+  position: relative;
+  border-radius: var(--border-radius);
+  padding: var(--container-padding);
+  background-color: rgb(0, 11, 43);
+  max-width: 70%;
+  margin-top: 15px;
+  margin-bottom: 30px;
+  justify-self: center;
+}
+
+.container::before {
+  position: absolute;
+  display: block;
+  content: " ";
+  background-image: conic-gradient(from var(--angle),blue, orange, blue);
+  width: calc(100% + var(--container-border-size) * 2);
+  height: calc(100% + var(--container-border-size) * 2);
+  z-index: 1;
+  top: calc(0px - var(--container-border-size));
+  left: calc(0px - var(--container-border-size));
+  border-radius: var(--border-radius);
+  z-index: -1;
+  animation: spin 10s linear infinite;
+}
+
+#experience::before {
+  animation-direction: reverse;
+}
+
+#experience {
+  max-width: 400px;
+}
+
+.cards {
+  margin-top: 10px;
+  display: flex;
+  gap:10px;
+  align-self: center;
+  flex-wrap: wrap;
+  justify-self: center;
+  justify-content: center;
+}
+
+h3 {
+  text-align: center;
+}
+
+.card {
+  display: inline;
+  width: 20vh;
+  background-color: var(--card-color);
+  border-radius: var(--border-radius);
+  padding: 20px;
+}
+
+.card-image {
+  width: 16vh;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  padding: 2vh;
+  padding-bottom: 0;
+  padding-top: 0;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+
+
+
+#case-studies-container::before {
+  animation-direction: reverse;
+}
+
+.entry-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.entry {
+  display: flex;
+  flex-direction: row;
+  background-color: var(--card-color);
+  border-radius: var(--border-radius);
+  justify-items: center;
+  align-items: center;
+}
+
+.entry:hover {
+  cursor: pointer;
+  background-color: var(--card-color-hover);
+}
+
+.entry-image {
+  display: inline-block;
+  width: min(20vw, 20vh);
+  padding: 2vh;
+  padding-bottom: 0;
+  padding-top: 0;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.entry-text {
+  display: inline-block;
+  text-align: center;
+  height: fit-content;
+  font-size: min(2.3vw, 2.3vh);
+  margin-left: 10px;
+  margin-right: 3vw;
+}
+
+
+#coming-soon-container {
+  justify-items: center;
+}
+
+.coming-soon-body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  justify-items: center;
+  align-content: center;
+}
+
+
+/* -------------------------------- Variables and Animations --------------------------------*/
+:root {
+  --container-padding: 15px;
+  --container-border-size: .15rem;
+  --border-radius: .75rem;
+  --card-color: rgb(25, 25, 60);
+  --card-color-hover: rgb(29, 29, 70);
+}
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes spin {
+  0%{
+    --angle: 0deg;
+  }
+  100% {
+    --angle: 360deg;
+  }
+}
+
+
+
+
+
+
