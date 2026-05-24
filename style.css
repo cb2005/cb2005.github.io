@@ -25,7 +25,7 @@ p, h1, h2, h3 {
   flex-direction: row;
   width: fit-content;
   justify-self: center;
-  gap: 13vh;
+  gap: 10vw;
   padding: 30px;
 }
 
