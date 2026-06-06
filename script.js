@@ -4,7 +4,7 @@ const ecommerceEntry = document.getElementById("ecommerce-entry");
 const analyticsEntry = document.getElementById("analytics-entry");
 
 serviceEntry.addEventListener("click", (e) => {
-  window.location.href ="service site/index.html";
+  window.location.href ="service site/home/index.html";
 })
 memoryGameEntry.addEventListener("click", (e) => {
   window.location.href = "memory game/index.html";
