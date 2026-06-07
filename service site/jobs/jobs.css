@@ -59,6 +59,21 @@ body, html{
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #title-card {
   position: sticky;
   top: var(--navbar-height);
@@ -124,142 +139,141 @@ body, html{
 
 
 
+
+
+
+
 #content-container {
-  display: block;
   position: relative;
-  /*height: 200vh;*/
-  width: 100%;
-  padding: 0;
-  border-radius: var(--border-radius);
-  margin-top: calc(var(--border-radius) * -1);
-  background-color: var(--background-color);
-}
-
-.overview-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 50;
-}
-
-.overview-container p {
-  width: min(700px, 75%);
-  text-align: center;
-  z-index: 50;
-  font-size: 3.4vh;
-}
-
-#overview-title {
-  margin: 50px;
-  font-size: 7vh;
-  font-family: "Great Vibes";
-}
-
-
-
-
-
-
-
-
-
-
-
-#locations-title {
-  margin: 50px;
-  margin-bottom: 10px;
-  font-size: 7vh;
-  font-family: "Great Vibes";
-}
-
-.location-container {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  z-index: 1000;
+  background-color: var(--background-color);
+  background-color: var(--background-color);
+  border-radius: var(--border-radius);
+  z-index: 100;
+  margin-top: calc(var(--border-radius) * -1);
+  padding-top: 1vw;
+  padding-bottom: 1vw;
+}
+
+#content {
+  display: flex;
+  flex-direction: row;
   gap: 2vw;
 }
 
-#location {
-  padding-top: 2vw;
-  padding-bottom: 2vw;
+
+
+
+
+#job-list {
   display: flex;
+  position: relative;
+  flex-direction: column;
+  width:40vw;
+  gap: 1vw;
+}
+
+
+#job-container {
+  position: relative;
   background-color: rgb(227, 227, 227);
-  flex-direction: column;
-  align-items: center;
-  width: var(--location-width);
   border-radius: var(--border-radius);
-  margin-bottom: 50px;
+  padding: 1.5vw;
 }
 
-#location-image {
-  border-radius: var(--border-radius);
-  width: 20vw;
-  aspect-ratio: 4/4;
-  object-fit: cover;
-}
-
-.location-text {
-  margin: 0px;
-}
-
-#address {
-  margin-top: 10px;
-}
-
-#address, #phone {
-  font-size: 2vw;
-  width: var(--location-width);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#book-button-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 50px;
-}
-
-#book-button-title {
-  width: fit-content;
-  font-size: 3vh;
-  margin: 15px;
-}
-
-#book-button {
-  width: fit-content;
-  border: none;
-  background-color:  var(--card-color);
-  padding: 2vh;
-  border-radius: var(--border-radius);
-  font-size: 2vh;
-  box-shadow: 2px 2px 3px rgb(205, 205, 205);
-  font-weight: bold;
-}
-
-#book-button:hover {
-  transform: translateY(-4px);
-  background-color: rgb(211, 210, 210);
-  transition: all 0.2s ease-in-out;
+#job-container:hover {
+  background-color: rgb(220, 220, 220);
   cursor: pointer;
 }
 
+#job-content {
+  display: flex;
+  flex-direction: row;
+}
+
+#job-image{
+  width: 10vw;
+  margin-right: 1.5vw;
+  border-radius: var(--border-radius);
+}
+
+#job-title {
+  font-weight: normal;
+  font-size: 2.8vw;
+  margin: 0;
+}
+
+#job-location {
+  font-size: 1.5vw;
+  margin: 0;
+  margin-top: 0.5vw;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#job-details {
+  position: sticky;
+  display: flex;
+  flex-direction: column;
+  top: calc(var(--navbar-height) + 1vw);
+  width: 40vw;
+  height: fit-content;
+  content: "";
+}
+
+#job-details::after {
+  position: absolute;
+  content: " ";
+  height: 88vh;
+  width: 0.2vw;
+  left: calc(1vw * -1);
+  top:0;
+  background-color: rgb(0, 0, 0);
+  border-radius: 100px
+}
+
+
+#job-details-card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--card-color);
+  align-items: center;
+  align-self: center;
+  padding: 2vw;
+  border-radius: var(--border-radius);
+}
+
+#job-details-image {
+  width: 15vw;
+}
+
+#job-details-position {
+  font-size: 2vw;
+  margin: 0;
+  margin-top: 1vw;
+}
+
+
+.details-text {
+  font-size: 2vw;
+  margin: 0;
+  margin-top: 1vw;
+}
 
 
 
@@ -281,12 +295,6 @@ body, html{
 
 
 
-
-
-
-
-
-/* -------------------------- VARIABLES ------------------------- */
 
 :root {
   --background-color: aliceblue;
@@ -296,9 +304,3 @@ body, html{
   --location-width: 25vw;
   --card-color: rgb(227, 227, 227);
 }
-
-
-
-
-
-

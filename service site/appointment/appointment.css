@@ -1,0 +1,296 @@
+body, html{
+  margin: 0;
+  position: relative;
+  background-color: var(--background-color) ;
+  font-size: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.navbar {
+  display: flex;
+  position: sticky;
+  top: 0;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: var(--navbar-height);
+  background-color: var(--background-color);
+  width: 100%;
+  z-index: 9999;
+  box-shadow: 0px 2px 3px rgb(168, 168, 168);
+}
+
+.navbar-title {
+  margin-left: 20px;
+  font-size: min(5vh, 5vw);
+  font-family: "Great Vibes";
+}
+
+.navbar-buttons {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
+.navbar-button {
+  background-color: var(--background-color);
+  border: none;
+  height: 100%;
+  padding-left: var(--navbar-button-padding);
+  padding-right: var(--navbar-button-padding);
+  font-size: min(3vh, 3vw);;
+}
+
+.navbar-button:hover {
+  cursor: pointer;
+}
+
+.navbar-button:hover {
+  background-color: rgb(230, 240, 248);
+}
+
+
+
+
+
+
+
+
+
+
+
+#appointment-search-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: sticky;
+  top: var(--navbar-height);
+  align-items: center;
+  justify-content: center;
+}
+
+#appointment-search-overlay {
+  position: absolute;
+  content: "";
+  background-color: rgb(0, 0, 0, 0.5);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+#search-image {
+  position: relative;
+  width: 100%;
+  top: 0;
+  z-index: 0; 
+}
+
+#search-container {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  z-index: 3;
+  background-color: var(--background-color);
+  width: 70%;
+  border-radius: var(--border-radius);
+  top:5vw;
+  padding-bottom: 2vw;
+  padding-top: 2vw;
+  align-items: center;
+}
+
+
+#search-title-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 90%;
+}
+
+#search-title {
+  font-size: 3vw;
+  margin: 0;
+}
+
+#book-button {
+  width: fit-content;
+  border: none;
+  background-color:  var(--card-color);
+  padding: 1.5vw;
+  border-radius: 1.5vw;
+  font-size: 1.5vw;
+  box-shadow: 2px 2px 3px rgb(205, 205, 205);
+  font-weight: bold;
+}
+
+#book-button:hover {
+  transform: translateY(-4px);
+  background-color: rgb(210, 210, 210);
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.search-label {
+  width: 90%;
+  font-size: 1.5vw;
+  margin: 0;
+  margin-top: 1vw;
+} 
+
+.search-input {
+  width: 90%;
+  height: 2.5vw;
+  font-size: 1.5vw;
+  border-radius: var(--border-radius);
+  padding-left: .5vw;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#content-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 200vh;
+  background-color: var(--background-color);
+  border-radius: var(--border-radius);
+  margin-top: calc(var(--border-radius) * -1);
+  z-index: 4;
+  box-shadow: 0px -2px 3px rgb(168, 168, 168);
+  align-items: center;
+  padding-top: 2vw;
+}
+
+#appointments-container {
+  width: 90%;
+}
+
+#appointments-title {
+  position: relative;
+  background-color: transparent;
+  margin: 0;
+  width: fit-content;
+  font-size: 2.5vw;
+}
+
+#appointments-title::after {
+  display: block;
+  content: " ";
+  position: absolute;
+  width: 400%;
+  height: 0.22vw;
+  margin-top: 0.5vw;
+  background-color: black;
+}
+
+
+
+
+
+#appointment-list {
+  margin-top: 2vw;
+  display: flex;
+  flex-direction: column;
+  gap: 1vw;
+  align-items: center;
+}
+
+.appointment-container {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: var(--card-color);
+  border-radius: var(--border-radius);
+  width: 80%;
+  padding: 1vw;
+}
+
+.appointment-content {
+  display: flex;
+  position: relative;
+  flex-direction: row;
+  align-items: center;
+  gap: 3%;
+}
+
+.appointment-image {
+  width: 15%;
+  height: fit-content;
+  border-radius: var(--border-radius);
+}
+
+
+.appointment-info {
+  width: 55%;
+}
+
+.appointment-info p {
+  font-size: 1.5vw;
+  margin: 1vw;
+}
+
+
+#appointment-title {
+  font-weight: bold;
+  font-size: 2vw;
+}
+
+
+.cancel-button {
+  width: fit-content;
+  height: fit-content;
+  padding: 1.0vw;
+  border-radius: var(--border-radius);
+  border: none;
+  font-weight: bold;
+  background-color: white;
+  box-shadow: 2px 2px 3px rgb(0, 0, 0, 0.3);
+  font-size: 1.5vw;
+  margin: 2vw;
+
+}
+
+.cancel-button:hover {
+  cursor: pointer;
+  background-color: rgb(250, 250, 250);
+  transform: translateY(-2px);
+  transition: ease-in-out 0.2s;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+:root {
+  --background-color: aliceblue;
+  --navbar-height: 8vh;
+  --navbar-button-padding: 20px;
+  --border-radius: 2vh;
+  --location-width: 25vw;
+  --card-color: rgb(227, 227, 227);
+}

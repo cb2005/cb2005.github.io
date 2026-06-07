@@ -5,13 +5,21 @@ const root = ReactDOM.createRoot(container);
 function NavBar() {
   return (
     <>
-      <div class="navbar">
-        <p class="navbar-title">The Cutting Room</p>
+      <div className="navbar">
+        <p className="navbar-title">The Cutting Room</p>
 
-        <div class="navbar-buttons">
-          <button class="navbar-button">Home</button>
-          <button class="navbar-button">Appointments</button>
-          <button class="navbar-button">Jobs</button>
+        <div className="navbar-buttons">
+          <button className="navbar-button" id="navbar-home" onClick={"click", () => {
+            window.location.href = "index.html";
+          }}>Home</button>
+
+          <button className="navbar-button" id="navbar-appointment" onClick={"click", () => {
+            window.location.href = "../appointment/index.html";
+          }}>Appointments</button>
+
+          <button className="navbar-button" id="navbar-jobs" onClick={"click", () => {
+            window.location.href = "../jobs/index.html";
+          }}>Jobs</button>
         </div>
       </div>
     </>
@@ -24,7 +32,7 @@ function TitleCard() {
     <>
       <div id="title-card">
         <img src="../images/salon.webp" id="title-image"/>
-        <p id="title"><p id="title-text">The Cutting Room</p></p>
+        <div id="title"><p id="title-text">The Cutting Room</p></div>
       </div>
     </>
   );
@@ -44,7 +52,7 @@ function Content() {
 function OverView() {
   return (
     <>
-      <div class="overview-container">
+      <div className="overview-container">
         <p id="overview-title">A moment just for you.</p>
 
         <p>Life gets busy, and taking time for yourself isn’t always easy.</p>
@@ -90,8 +98,8 @@ function Location(props) {
     <>
       <div id="location">
         <img src="../images/cuttingroom.jpg" id="location-image"/>
-        <p class="location-text" id="address">{props.address}</p>
-        <p class="location-text" id="phone">{props.phone}</p>
+        <p className="location-text" id="address">{props.address}</p>
+        <p className="location-text" id="phone">{props.phone}</p>
       </div>
     </>
   );
@@ -102,7 +110,9 @@ function BookButton() {
     <>
       <div id="book-button-container">
         <p id="book-button-title">Need an appointment?</p>
-        <button id="book-button">Book Now!</button>
+        <button id="book-button" onClick={"click", () => {
+          window.location.href = "../appointment/index.html";
+        }}>Book Now!</button>
       </div>
     </>
   );
@@ -121,3 +131,8 @@ function App() {
 }
 
 root.render(App());
+
+
+
+
+
