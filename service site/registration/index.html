@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head> 
+    <meta charset="UTF-8">
+    <title>eHotels</title>
+    <link rel="stylesheet" href="registration.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="navbar">
+        <p class="navbar-title">The Cutting Room</p>
+
+        <div class="navbar-buttons">
+            <button class="navbar-button" onClick="window.location.href = '../home/index.html'">Home</button>
+            <button class="navbar-button" onClick="window.location.href = '../appointment/index.html'">Appointments</button>
+            <button class="navbar-button" onclick="window.location.href = '../jobs/index.html'";>Jobs</button>
+        </div>
+    </div>
+
+    
+
+    <main id="main-content">
+        <img id="background-image" src="../images/register.jpg">
+        <div id="register-container">
+            <div id="content">   
+                <p class="container-title">Register</p>
+
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Enter your email">
+                </div>
+
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password">
+                </div>
+
+                <div class="button-row">
+                    <button type="submit" id="cancel-btn">Cancel</button>
+                    <button type="button" id="register-btn">Register</button>
+                </div>
+            </div>
+    </main>
+
+    <script type="module" src="registration.js"></script>
+</body>
+</html>

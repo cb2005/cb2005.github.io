@@ -1,7 +1,6 @@
 const container = document.querySelector(".js-container");
 const root = ReactDOM.createRoot(container);
 
-
 const jobs = [
   {
     position: "Senior Hairstylist",
