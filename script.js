@@ -7,7 +7,7 @@ serviceEntry.addEventListener("click", (e) => {
   window.location.href ="service site/login/index.html";
 })
 memoryGameEntry.addEventListener("click", (e) => {
-  window.location.href = "memory game/index.html";
+  window.location.href = "memory game/settings-difficulty/index.html";
 })
 ecommerceEntry.addEventListener("click", (e) => {
   window.location.href = "ecommerce site/index.html"
