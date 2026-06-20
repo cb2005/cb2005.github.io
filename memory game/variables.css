@@ -1,0 +1,8 @@
+:root {
+  --font: "Titan One", sans-serif;
+  --button-color-hover: rgb(245, 179, 255);
+  --button-color: rgb(249, 209, 255);
+  --border-radius: 2vh;
+  --card-color: rgb(218, 218, 218);
+  --card-color-hover: rgb(225, 225, 225);
+}
