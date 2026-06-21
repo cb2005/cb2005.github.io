@@ -262,7 +262,7 @@ function Overlay({ result, mistakes }) {
             : "Better Luck Next Time!"}
         </h1>
 
-        <p>You made {mistakes} mistakes</p>
+        <p>You made {mistakes} mistake(s)</p>
 
         <div id="overlay-button-div">
           <button
