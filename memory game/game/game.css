@@ -1,13 +1,15 @@
-body {
+body, html {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
+  background-color: var(--background-color);
 }
 
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  color: white;
 }
 
 #options-div {
@@ -29,7 +31,6 @@ body {
   width: 15vh;
   height: fit-content;
   font-weight: bold;
-  box-shadow: .5vh .5vh .5vh rgb(213, 213, 213);
 }
 
 #back-button-div {
@@ -49,11 +50,12 @@ body {
 
 #back-button-div:hover {
   transition: .2s;
-  background-color: rgb(234, 234, 234);
+  background-color: var(--button-color);
 }
 
 #back-button-div img {
   height: 5vh;
+  filter: invert(1);
 }
 
 #back-button-div p {
@@ -64,9 +66,9 @@ body {
 }
 
 #title {
-  font-weight: bold;
   font-size: 4vh;
   align-self: center;
+  font-family: "Titan One";
 }
 
 
@@ -138,22 +140,35 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: white;
+  background-color: var(--background-color);
   padding: 5vh;
   border-radius: var(--border-radius);
   text-align: "center";
-  gap:5vh
+}
+
+#overlay-container h1 {
+  font-size: 5vh;
+  margin-bottom: 2.5vh;
+}
+
+#overlay-container p {
+  font-size: 2.5vh;
+  margin-bottom: 4vh;
 }
 
 #overlay-button-div {
   display: flex;
   flex-direction: row;
-  gap: 6vw
+  gap: 6vh;
 }
 
 #overlay-button-div button {
   width: fit-content;
-  font-size: 3vw;
+  font-size: 3vh;
+}
+
+#overlay-button-div button:hover {
+  background-color: var(--button-color-hover);
 }
 
 

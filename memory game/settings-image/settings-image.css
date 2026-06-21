@@ -9,12 +9,14 @@ body, html {
   width: 100%;
   font-family: var(--font);
   position: relative;
+  background-color: var(--background-color);
 }
 
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  color: white;
 }
 
 #back-button-div {
@@ -34,11 +36,12 @@ body, html {
 
 #back-button-div:hover {
   transition: .2s;
-  background-color: rgb(234, 234, 234);
+  background-color: var(--button-color);
   cursor: pointer;
 }
 
 #back-button-div img {
+  filter: invert(1);
   height: 5vh;
 }
 
@@ -72,7 +75,6 @@ body, html {
   padding: 2vh;
   font-size: 5vh;
   font-weight: bold;
-  box-shadow: .5vh .5vh .5vh rgb(213, 213, 213);
 }
 
 .button:hover {

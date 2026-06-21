@@ -7,12 +7,14 @@ body, html {
   font-family: sans-serif;
   height: 100%;
   font-family: var(--font);
+  background-color: var(--background-color);
 }
 
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  color: white;
 }
 
 #difficulty-container {
@@ -38,7 +40,6 @@ body, html {
   padding: 2vh;
   font-size: 5vh;
   font-weight: bold;
-  box-shadow: .5vh .5vh .5vh rgb(213, 213, 213);
 }
 
 .button:hover {

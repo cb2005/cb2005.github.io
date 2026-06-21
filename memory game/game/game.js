@@ -49,7 +49,7 @@ function Options() {
         <p>Back</p>
       </div>
 
-      <p id="title">Memory Game</p>
+      <p id="title">Picture Match</p>
 
       <button
         className="option-button"

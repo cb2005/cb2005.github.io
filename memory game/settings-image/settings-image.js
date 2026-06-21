@@ -12,7 +12,10 @@ if (!difficulty) {
 function App() {
   return (
     <>
-      <div id="back-button-div">
+      <div id="back-button-div" onClick={() => {
+        window.sessionStorage.clear();
+        window.location.href = "../settings-difficulty/index.html";
+      }}>
         <img src="../images/back-arrow.png" id="back-arrow"/>
         <p>Back</p>
       </div>
