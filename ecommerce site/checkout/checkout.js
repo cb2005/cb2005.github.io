@@ -87,9 +87,6 @@ function Item(props)  {
 }
 
 function Section(props) {
-
-  let footer = null;
-
   let elements = null;
   if (props.visible) {
     elements = props.elements;
