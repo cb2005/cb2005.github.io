@@ -1,0 +1,8 @@
+:root {
+  --border-radius: 2vw;
+  --button-background-color: white;
+  --button-hover-color: rgb(242, 242, 242);
+  --button2-background-color: green;
+  --button2-hover-color: rgb(0, 168, 0);
+  --navbar-height: 5vw;
+}
