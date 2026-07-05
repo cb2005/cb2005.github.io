@@ -119,6 +119,21 @@ function Content(props) {
   const [paymentVisible, setPaymentVisible] = React.useState(true);
   const [shippingVisible, setShippingVisible] = React.useState(true);
 
+
+  const [cardNumber, setCardNumber] = React.useState("");
+  const [CCV, setCCV] = React.useState("");
+  const [month, setMonth] = React.useState("");
+  const [year, setYear] = React.useState("");
+  const [cardHolder, setCardHolder] = React.useState("");
+
+  const [country, setCountry] = React.useState("");
+  const [province, setProvince] = React.useState("");
+  const [city, setCity] = React.useState("");
+  const [address, setAddress] = React.useState("");
+
+  const values = [cardNumber, CCV, month, year, cardHolder, country, province, city, address];
+
+
   const cart = props.cart;
 
   let subtotal = 0;
@@ -200,29 +215,39 @@ function Content(props) {
   const elements2 = ( 
       <div className="section-container">
         <div className="input-container">
-          <p className="input-label">Card Number</p>
-          <input placeholder="XXXX-XXXX-XXXX-XXXX" type="number"></input>
+          <p className="input-label">Card Number *</p>
+          <input placeholder="XXXX-XXXX-XXXX-XXXX" type="number" onChange={(e) => {
+            setCardNumber(e.target.value);
+          }}></input>
         </div>
 
         <div className="ccv-and-date">
           <div className="input-container">
-            <p className="input-label">CCV</p>
-            <input type="number" placeholder="XXX"></input>
+            <p className="input-label">CCV *</p>
+            <input type="number" placeholder="XXX" onChange={(e) => {
+            setCCV(e.target.value);
+          }}></input>
           </div>
 
           <div className="date-container">
-          <p className="input-label">Expiry Date</p>
+          <p className="input-label">Expiry Date *</p>
           <div className="date">
-            <input type="number" placeholder="XX"></input>
+            <input type="number" placeholder="XX" onChange={(e) => {
+              setMonth(e.target.value);
+            }}></input>
             <p className="date-separator">/</p>
-            <input type="number" placeholder="XXXX"></input>
+            <input type="number" placeholder="XXXX" onChange={(e) => {
+              setYear(e.target.value);
+            }}></input>
           </div>
           </div>          
         </div>
         
         <div className="input-container">
-          <p className="input-label">Cardholder</p>
-          <input placeholder="Cardholder"></input>
+          <p className="input-label">Cardholder *</p>
+          <input placeholder="Cardholder" onChange={(e) => {
+            setCardHolder(e.target.value);
+          }}></input>
         </div>
 
         
@@ -258,24 +283,32 @@ function Content(props) {
       <div className="section-container">
         <div className="country-province-city" id="csp-container">
           <div className="input-container">
-            <p className="input-label">Country</p>
-            <input placeholder="Enter Country" type="text"></input>
+            <p className="input-label">Country *</p>
+            <input placeholder="Enter Country" type="text" onChange={(e) => {
+              setCountry(e.target.value);
+            }}></input>
           </div>
 
           <div className="input-container">
-            <p className="input-label">Province/State</p>
-            <input placeholder="Enter Province/State" type="text"></input>
+            <p className="input-label">Province/State *</p>
+            <input placeholder="Enter Province/State" type="text" onChange={(e) => {
+              setProvince(e.target.value);
+            }}></input>
           </div>
 
           <div className="input-container">
-            <p className="input-label">City</p>
-            <input placeholder="Enter City" type="text"></input>
+            <p className="input-label">City *</p>
+            <input placeholder="Enter City" type="text" onChange={(e) => {
+              setCity(e.target.value);
+            }}></input>
           </div>
         </div>
         
         <div className="input-container">
-          <p className="input-label">Street Address</p>
-          <input placeholder="Street Address"></input>
+          <p className="input-label">Street Address *</p>
+          <input placeholder="Street Address" onChange={(e) => {
+            setAddress(e.target.value);
+          }}></input>
         </div>
 
         <div className="input-container">
@@ -299,13 +332,27 @@ function Content(props) {
         <Section header={header3} elements={elements3} visible={shippingVisible}></Section>
 
         <button className="place-order-button" onClick={() => {
-          setOverlayVisible(true);
+          if (checkValues(values)) {
+            setOverlayVisible(true);
+          } else {
+            alert("Please fill out all madatory fields.");
+          }
         }}>
           Place Order
         </button>
       </div>
     </>
   );
+}
+
+function checkValues(values) {
+  console.log(values);
+  for (let i=0; i<values.length; i++) {
+    if (values[i] == "") {
+      return false;
+    }
+  }
+  return true;
 }
 
 
