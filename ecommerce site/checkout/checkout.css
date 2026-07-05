@@ -3,14 +3,15 @@
   padding: 0;
   box-sizing: border-box;
   position: relative;
+  overflow-y: hidden;
 }
 
 
 html, body, .js-container {
   height: 100%;
   width: 100%;
-
 }
+
 
 
 
@@ -156,6 +157,8 @@ html, body, .js-container {
   flex-direction: column;
   align-items: center;
   padding: 2vw;
+  height:calc(100vh - var(--navbar-height));
+  overflow: auto;
 }
 
 .section {
@@ -165,6 +168,7 @@ html, body, .js-container {
   box-shadow: -0.1vw 0 1vw rgb(0,0,0, 0.2);
   background: white;
   margin-bottom: 20px;
+  min-height: fit-content;
 }
 
 .section-header {
@@ -175,6 +179,7 @@ html, body, .js-container {
   display: flex;
   align-items: center;
   z-index: 1;
+  min-height: fit-content;
 }
 
 .outer-header-div {
@@ -184,6 +189,7 @@ html, body, .js-container {
   align-items: center;
   width: 100%;
   justify-content: space-between;
+  min-height: fit-content;
 }
 
 .header-div {
@@ -194,11 +200,13 @@ html, body, .js-container {
   justify-content: space-between;
   width: 90%;
   align-items: center;
+  min-height: fit-content;
 }
 
 .header-div p {
   font-size: 3vw;
   margin: 0;
+  min-height: fit-content;
 }
 
 /* Fixed collapse button */
@@ -215,6 +223,7 @@ html, body, .js-container {
   z-index: 10;
   position: relative;
   margin-right: 1vw;
+  min-height: fit-content;
 }
 
 .collapse-button:hover {
@@ -226,13 +235,6 @@ html, body, .js-container {
   height: 2vw;
   display: block;
 }
-
-.section-footer {
-  padding: 1vw 2vw;
-  background-color: var(--button-hover-color);
-  border-top: 1px solid #ddd;
-}
-
 
 
 
@@ -248,6 +250,7 @@ html, body, .js-container {
   display: flex;
   flex-direction: column;
   gap: 2vw;
+  min-height: fit-content;
 }
 
 .input-label {
@@ -319,6 +322,7 @@ input {
   font-size: 2vw;
   border: none;
   border-radius: var(--border-radius);
+  min-height: fit-content;
 }
 
 .place-order-button:hover {
@@ -371,6 +375,8 @@ input {
 .overlay-text {
   font-size: 2vw;
 }
+
+
 
 .overlay-button {
   background-color: var(--button2-background-color);

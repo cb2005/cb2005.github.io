@@ -48,6 +48,12 @@ function NavBar(props) {
           </button>
 
           <button className="navbar-button" onClick={() => {
+            window.location.href = "../help/index.html";
+          }}>
+            Help
+          </button>
+
+          <button className="navbar-button" onClick={() => {
             window.location.href = "../cart/index.html";
           }}>
             <div className="cart-container">
