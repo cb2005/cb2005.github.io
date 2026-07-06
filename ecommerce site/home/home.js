@@ -277,6 +277,7 @@ function Section(props) {
             props.setCart(updatedCart);
             // Save to sessionStorage (must be stringified)
             window.sessionStorage.setItem("cart", JSON.stringify(updatedCart));
+            alert("Item successfully added to cart");
           }}>Add to Cart</button>
         </div>
       );
