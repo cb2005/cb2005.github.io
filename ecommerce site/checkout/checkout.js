@@ -360,6 +360,27 @@ function checkValues(values) {
 
 
 function ConfirmationOverlay(props) {
+
+  const [stars, setStars] = React.useState(-1);
+
+  let buttons = [];
+  for (let i=0; i<5; i++) {
+    if(i<=stars) {
+      buttons.push(
+        <button className="star" onClick={() => {
+          setStars(i)}}>
+            <img className="star-image" src="../images/gold-star.jpg"/>
+          </button>
+      )
+    } else {
+      buttons.push(
+        <button className="star" onClick={() => {setStars(i)}}>
+          <img className="star-image" src="../images/grey-star.jpg"/>
+        </button>
+      )
+    }
+  }
+
   return (
     <>
       <div className="overlay" style={{display: props.overlayVisible ? "flex" : "none"}}>
@@ -367,6 +388,12 @@ function ConfirmationOverlay(props) {
           <p className="overlay-title">Order Confirmation</p>
           <p className="overlay-text">Your order has been placed  successfully!</p>
           <p className="overlay-text">Your order is expected to arrive in 2-3 buisiness days.</p>
+
+          <p  className="overlay-text" id="experience-question">How would you rate your experience?</p>
+
+          <div className="stars">
+            {buttons}
+          </div>
           <button className="overlay-button" onClick={() => {
             window.sessionStorage.removeItem("cart");
             window.sessionStorage.setItem("page", "Home");

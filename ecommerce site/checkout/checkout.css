@@ -374,6 +374,7 @@ input {
 
 .overlay-text {
   font-size: 2vw;
+  margin-bottom: 1vw;
 }
 
 
@@ -397,3 +398,28 @@ input {
   background-color: var(--button2-hover-color);
   transform: translateY(-0.2vw);
 }
+
+
+#experience-question {
+  margin-top: 3vw;
+}
+
+.stars {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5vw;
+}
+.star {
+  width: fit-content;
+  background-color: transparent;
+  border: none;
+}
+
+.star:hover {
+  cursor: pointer;
+}
+
+.star-image {
+  width: 3vw;
+}
+
