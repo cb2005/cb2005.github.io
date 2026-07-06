@@ -386,7 +386,7 @@ function ConfirmationOverlay(props) {
       <div className="overlay" style={{display: props.overlayVisible ? "flex" : "none"}}>
         <div className="overlay-container">
           <p className="overlay-title">Order Confirmation</p>
-          <p className="overlay-text">Thank you for shopping with us today!</p>
+          <p className="overlay-text">Thanks for shopping with us today!</p>
           <p className="overlay-text">Your order is expected to arrive in 2-3 buisiness days.</p>
 
           <p  className="overlay-text" id="experience-question">How would you rate your experience?</p>
