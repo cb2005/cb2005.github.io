@@ -785,72 +785,90 @@ function FoodGraph(props) {
     </div>
   );
 }
-
 function GraduateIncomeGraph(props) {
   // ALL hooks must be at the top, before any conditional returns
   const canvasRef = React.useRef(null);
   
-  // State for checked qualifications
-  const [localCheckedState, setLocalCheckedState] = React.useState({});
+  // State for checked qualifications - start with null to track initialization
+  const [localCheckedState, setLocalCheckedState] = React.useState(null);
   
-  // useEffect must be declared here, before conditional returns
-  React.useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    // Only run if data is available
-    if (!loadedData || loadedData.length === 0) return;
-
-    // Get all keys from the first row
-    const keys = Object.keys(loadedData[0]);
-    
-    // Helper function to check if a value is a non-empty string
-    const isNonEmptyString = (value) => {
-      return typeof value === 'string' && value.trim() !== '';
-    };
-    
-    // Helper function to get bilingual text
-    const getBilingualText = (text, language) => {
-      if (!text || typeof text !== 'string') return text || '';
-      if (!text.includes('/')) return text;
-      const parts = text.split('/');
-      if (language === "English") {
-        return parts[0].trim();
-      } else {
-        return parts[1] ? parts[1].trim() : parts[0].trim();
-      }
-    };
-    
-    // Initialize checked state if empty
-    if (Object.keys(localCheckedState).length === 0) {
-      const initialChecked = {};
-      for (let i = 0; i < loadedData.length; i++) {
-        const row = loadedData[i];
-        const qual = getBilingualText(row[keys[0]], props.language);
-        if (isNonEmptyString(qual) && !initialChecked[qual]) {
-          initialChecked[qual] = true;
-        }
-      }
-      setLocalCheckedState(initialChecked);
+  // Helper functions - defined once, outside any hooks
+  const isNonEmptyString = (value) => {
+    return typeof value === 'string' && value.trim() !== '';
+  };
+  
+  const getBilingualText = (text, language) => {
+    if (!text || typeof text !== 'string') return text || '';
+    if (!text.includes('/')) return text;
+    const parts = text.split('/');
+    if (language === "English") {
+      return parts[0].trim();
+    } else {
+      return parts[1] ? parts[1].trim() : parts[0].trim();
     }
-    
-    // Group data by qualification and field of study
-    const qualificationData = {};
-    let currentQual = null;
-    
-    // FIRST: Get all unique fields across ALL qualifications (for complete color mapping)
-    const allFieldsSet = new Set();
-    for (let i = 0; i < loadedData.length; i++) {
-      const row = loadedData[i];
-      const fieldOfStudy = getBilingualText(row[keys[1]], props.language);
-      if (isNonEmptyString(fieldOfStudy) && fieldOfStudy !== 'Total, field of study') {
-        allFieldsSet.add(fieldOfStudy);
-      }
-    }
-    const allPossibleFields = Array.from(allFieldsSet);
-    
-    // Sort fields for consistent order
-    const fieldOrder = [
+  };
+  
+  // Check if a field is a "Total" field (should be excluded from field list)
+  const isTotalField = (fieldOfStudy) => {
+    return fieldOfStudy === 'Total, field of study' || 
+           fieldOfStudy === 'Total, domaine d\'études' ||
+           fieldOfStudy === 'Total';
+  };
+  
+  // Get the English version of a field name for consistent ordering
+  // This maps French field names (as they appear in the data) to English
+  const getEnglishFieldName = (fieldText) => {
+    const fieldMap = {
+      // English -> English (no change)
+      'STEM': 'STEM',
+      'Science and science technology': 'Science and science technology',
+      'Engineering and engineering technology': 'Engineering and engineering technology',
+      'Mathematics and computer and information science': 'Mathematics and computer and information science',
+      'BHASE': 'BHASE',
+      'Business and administration': 'Business and administration',
+      'Arts and humanities': 'Arts and humanities',
+      'Social and behavioural sciences': 'Social and behavioural sciences',
+      'Legal professions and studies': 'Legal professions and studies',
+      'Health care': 'Health care',
+      'Education and teaching': 'Education and teaching',
+      'Trades, services, natural resources and conservation': 'Trades, services, natural resources and conservation',
+      // French -> English (exact matches from your data)
+      'Science et technologie scientifique': 'Science and science technology',
+      'Ingénierie et technologies de l\'ingénierie': 'Engineering and engineering technology',
+      'Mathématiques et informatique et sciences de l\'information': 'Mathematics and computer and information science',
+      'Gestion et administration': 'Business and administration',
+      'Arts et sciences humaines': 'Arts and humanities',
+      'Sciences sociales et comportementales': 'Social and behavioural sciences',
+      'professions et études juridiques': 'Legal professions and studies',
+      'soins de santé': 'Health care',
+      'Éducation et enseignement': 'Education and teaching',
+      'Commerces, services, ressources naturelles et conservation': 'Trades, services, natural resources and conservation'
+    };
+    return fieldMap[fieldText] || fieldText;
+  };
+  
+  // Get the English version of a qualification for consistent ordering
+  const getEnglishQualification = (qualText) => {
+    const qualMap = {
+      'Career, technical or professional training certificate': 'Career, technical or professional training certificate',
+      'Certificat de formation professionnelle, technique ou de carrière': 'Career, technical or professional training certificate',
+      'Career, technical or professional training diploma': 'Career, technical or professional training diploma',
+      'Diplôme de formation professionnelle, technique ou de carrière': 'Career, technical or professional training diploma',
+      'Undergraduate degree': 'Undergraduate degree',
+      'Diplôme de premier cycle': 'Undergraduate degree',
+      'Professional degree': 'Professional degree',
+      'Diplôme professionnel': 'Professional degree',
+      'Master\'s degree': 'Master\'s degree',
+      'Une maîtrise': 'Master\'s degree',
+      'Doctoral degree': 'Doctoral degree',
+      'Doctorat': 'Doctoral degree'
+    };
+    return qualMap[qualText] || qualText;
+  };
+  
+  // Define the canonical order of fields (English names) - matches the data order
+  const getFieldOrder = () => {
+    return [
       'STEM',
       'Science and science technology',
       'Engineering and engineering technology',
@@ -864,9 +882,77 @@ function GraduateIncomeGraph(props) {
       'Education and teaching',
       'Trades, services, natural resources and conservation'
     ];
+  };
+  
+  // Define the canonical order of qualifications (English names)
+  const getQualificationOrder = () => {
+    return [
+      'Career, technical or professional training certificate',
+      'Career, technical or professional training diploma',
+      'Undergraduate degree',
+      'Professional degree',
+      'Master\'s degree',
+      'Doctoral degree'
+    ];
+  };
+  
+  // Initialize state only once when data loads
+  React.useEffect(() => {
+    if (!loadedData || loadedData.length === 0) return;
+    if (localCheckedState !== null) return; // Already initialized
+    
+    const keys = Object.keys(loadedData[0]);
+    const initialChecked = {};
+    
+    // Get qualifications in the order they appear
+    const qualificationOrder = [];
+    for (let i = 0; i < loadedData.length; i++) {
+      const row = loadedData[i];
+      if (row[keys[0]] && typeof row[keys[0]] === 'string' && row[keys[0]].trim() !== '') {
+        const qual = getBilingualText(row[keys[0]], props.language);
+        if (!qualificationOrder.includes(qual)) {
+          qualificationOrder.push(qual);
+          initialChecked[qual] = true;
+        }
+      }
+    }
+    
+    setLocalCheckedState(initialChecked);
+  }, [loadedData, props.language]);
+  
+  // useEffect for drawing
+  React.useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    if (!loadedData || loadedData.length === 0) return;
+    if (localCheckedState === null) return; // Wait for initialization
+
+    // Get all keys from the first row
+    const keys = Object.keys(loadedData[0]);
+    
+    // Group data by qualification and field of study
+    const qualificationData = {};
+    let currentQual = null;
+    
+    // FIRST: Get all unique fields across ALL qualifications (excluding "Total" fields)
+    const allFieldsSet = new Set();
+    for (let i = 0; i < loadedData.length; i++) {
+      const row = loadedData[i];
+      const fieldOfStudy = getBilingualText(row[keys[1]], props.language);
+      // Skip "Total" fields
+      if (isNonEmptyString(fieldOfStudy) && !isTotalField(fieldOfStudy)) {
+        allFieldsSet.add(fieldOfStudy);
+      }
+    }
+    const allPossibleFields = Array.from(allFieldsSet);
+    
+    // Sort fields using the canonical English order
+    const fieldOrder = getFieldOrder();
     allPossibleFields.sort((a, b) => {
-      const indexA = fieldOrder.indexOf(a);
-      const indexB = fieldOrder.indexOf(b);
+      const englishA = getEnglishFieldName(a);
+      const englishB = getEnglishFieldName(b);
+      const indexA = fieldOrder.indexOf(englishA);
+      const indexB = fieldOrder.indexOf(englishB);
       if (indexA === -1) return 1;
       if (indexB === -1) return -1;
       return indexA - indexB;
@@ -891,19 +977,25 @@ function GraduateIncomeGraph(props) {
       numGraduates = typeof numGraduates === 'number' ? numGraduates : 0;
       salary = typeof salary === 'number' ? salary : 0;
       
-      if (isNonEmptyString(qual)) {
+      // Check if this is a qualification row (has value in column A)
+      const isQualificationRow = row[keys[0]] && typeof row[keys[0]] === 'string' && row[keys[0]].trim() !== '';
+      
+      if (isQualificationRow) {
         currentQual = qual;
         if (!qualificationData[currentQual]) {
           qualificationData[currentQual] = [];
         }
-        if (isNonEmptyString(fieldOfStudy) && fieldOfStudy !== 'Total, field of study') {
+        // If there's a field on the same row and it's not "Total", add it
+        if (isNonEmptyString(fieldOfStudy) && !isTotalField(fieldOfStudy)) {
           qualificationData[currentQual].push({
             fieldOfStudy: fieldOfStudy,
             numGraduates: numGraduates,
             salary: salary
           });
         }
-      } else if (currentQual && isNonEmptyString(fieldOfStudy) && fieldOfStudy !== 'Total, field of study') {
+      } 
+      // If it's a sub-row (empty column A) and we have a current qualification
+      else if (currentQual && isNonEmptyString(fieldOfStudy) && !isTotalField(fieldOfStudy)) {
         qualificationData[currentQual].push({
           fieldOfStudy: fieldOfStudy,
           numGraduates: numGraduates,
@@ -912,18 +1004,61 @@ function GraduateIncomeGraph(props) {
       }
     }
 
-    // Prepare data for the chart
-    const qualifications = Object.keys(qualificationData);
+    // Get qualifications in ORDER using the canonical order
+    const qualificationOrder = getQualificationOrder();
+    const qualifications = [];
+    
+    // First, get all unique qualifications from the data
+    const uniqueQualifications = new Set();
+    for (let i = 0; i < loadedData.length; i++) {
+      const row = loadedData[i];
+      if (row[keys[0]] && typeof row[keys[0]] === 'string' && row[keys[0]].trim() !== '') {
+        const qual = getBilingualText(row[keys[0]], props.language);
+        if (qualificationData[qual] && qualificationData[qual].length > 0) {
+          uniqueQualifications.add(qual);
+        }
+      }
+    }
+    
+    // Sort qualifications using the canonical English order
+    const sortedQualifications = Array.from(uniqueQualifications).sort((a, b) => {
+      const englishA = getEnglishQualification(a);
+      const englishB = getEnglishQualification(b);
+      const indexA = qualificationOrder.indexOf(englishA);
+      const indexB = qualificationOrder.indexOf(englishB);
+      if (indexA === -1) return 1;
+      if (indexB === -1) return -1;
+      return indexA - indexB;
+    });
+    
+    // Push sorted qualifications
+    sortedQualifications.forEach(qual => {
+      qualifications.push(qual);
+    });
     
     // Filter out qualifications that are unchecked
     const filteredQualifications = qualifications.filter(qual => {
-      const isChecked = localCheckedState[qual] !== false;
-      return isChecked;
+      return localCheckedState[qual] !== false;
     });
 
-    const ctx = canvasRef.current.getContext('2d');
-    const width = canvasRef.current.width;
-    const height = canvasRef.current.height;
+    // If no qualifications to show, display message
+    if (filteredQualifications.length === 0) {
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '16px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const msg = props.language === "English" 
+        ? 'No qualifications selected. Please check at least one.'
+        : 'Aucun diplôme sélectionné. Veuillez en cocher au moins un.';
+      ctx.fillText(msg, canvas.width / 2, canvas.height / 2);
+      return;
+    }
+
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
     
     ctx.clearRect(0, 0, width, height);
 
@@ -946,11 +1081,13 @@ function GraduateIncomeGraph(props) {
 
     let maxSalary = 0;
     filteredQualifications.forEach(qual => {
-      qualificationData[qual].forEach(item => {
-        if (item.salary > maxSalary) {
-          maxSalary = item.salary;
-        }
-      });
+      if (qualificationData[qual]) {
+        qualificationData[qual].forEach(item => {
+          if (item.salary > maxSalary) {
+            maxSalary = item.salary;
+          }
+        });
+      }
     });
     maxSalary = Math.ceil(maxSalary / 10000) * 10000;
     if (maxSalary === 0) maxSalary = 10000;
@@ -990,7 +1127,7 @@ function GraduateIncomeGraph(props) {
         return padding.top + chartHeight - (value / maxSalary) * chartHeight;
       };
 
-      // ----- Draw Grid Lines - EXTENDED FULL WIDTH -----
+      // Draw Grid Lines - EXTENDED FULL WIDTH
       ctx.strokeStyle = '#e9edf2';
       ctx.lineWidth = 1;
       ctx.setLineDash([4, 4]);
@@ -999,7 +1136,6 @@ function GraduateIncomeGraph(props) {
       for (let i = 0; i <= gridLines; i++) {
         const y = padding.top + (i / gridLines) * chartHeight;
         ctx.beginPath();
-        // Extend grid lines from left edge to right edge of canvas
         ctx.moveTo(0, y);
         ctx.lineTo(width, y);
         ctx.stroke();
@@ -1018,9 +1154,11 @@ function GraduateIncomeGraph(props) {
         const groupX = padding.left + gapBetweenGroups + qualIndex * (actualGroupWidth + gapBetweenGroups);
         
         const fieldDataMap = {};
-        qualificationData[qual].forEach(item => {
-          fieldDataMap[item.fieldOfStudy] = item;
-        });
+        if (qualificationData[qual]) {
+          qualificationData[qual].forEach(item => {
+            fieldDataMap[item.fieldOfStudy] = item;
+          });
+        }
         
         allPossibleFields.forEach((field, fieldIdx) => {
           const item = fieldDataMap[field];
@@ -1064,7 +1202,7 @@ function GraduateIncomeGraph(props) {
       });
     }
 
-    // ----- Title -----
+    // Title
     const title = props.language === "English" 
       ? 'Median Employment Income by Educational Qualification and Field of Study'
       : 'Revenu d\'emploi médian selon le diplôme et le domaine d\'études';
@@ -1075,7 +1213,7 @@ function GraduateIncomeGraph(props) {
     ctx.textBaseline = 'bottom';
     ctx.fillText(title, width / 2, padding.top - 10);
 
-    // ----- Y-axis Label -----
+    // Y-axis Label
     const yAxisLabel = props.language === "English" ? 'Median Income ($)' : 'Revenu médian ($)';
     ctx.fillStyle = '#64748b';
     ctx.font = '12px Arial';
@@ -1102,71 +1240,17 @@ function GraduateIncomeGraph(props) {
     return <div className="no-data">No data available</div>;
   }
 
+  if (localCheckedState === null) {
+    return <div className="loading">📂 Loading...</div>;
+  }
+
   // Get data for canvas width calculation and checkbox menu
   const keys = Object.keys(loadedData[0]);
-  const isNonEmptyString = (value) => {
-    return typeof value === 'string' && value.trim() !== '';
-  };
   
-  const getBilingualText = (text, language) => {
-    if (!text || typeof text !== 'string') return text || '';
-    if (!text.includes('/')) return text;
-    const parts = text.split('/');
-    if (language === "English") {
-      return parts[0].trim();
-    } else {
-      return parts[1] ? parts[1].trim() : parts[0].trim();
-    }
-  };
-  
-  // Initialize localCheckedState if empty
-  if (Object.keys(localCheckedState).length === 0) {
-    const initialChecked = {};
-    for (let i = 0; i < loadedData.length; i++) {
-      const row = loadedData[i];
-      const qual = getBilingualText(row[keys[0]], props.language);
-      if (isNonEmptyString(qual) && !initialChecked[qual]) {
-        initialChecked[qual] = true;
-      }
-    }
-    setTimeout(() => setLocalCheckedState(initialChecked), 0);
-  }
-  
+  // Build qualification data
   const qualificationData = {};
   let currentQual = null;
   
-  // Get all possible fields
-  const allFieldsSet = new Set();
-  for (let i = 0; i < loadedData.length; i++) {
-    const row = loadedData[i];
-    const fieldOfStudy = getBilingualText(row[keys[1]], props.language);
-    if (isNonEmptyString(fieldOfStudy) && fieldOfStudy !== 'Total, field of study') {
-      allFieldsSet.add(fieldOfStudy);
-    }
-  }
-  const fieldOrder = [
-    'STEM',
-    'Science and science technology',
-    'Engineering and engineering technology',
-    'Mathematics and computer and information science',
-    'BHASE',
-    'Business and administration',
-    'Arts and humanities',
-    'Social and behavioural sciences',
-    'Legal professions and studies',
-    'Health care',
-    'Education and teaching',
-    'Trades, services, natural resources and conservation'
-  ];
-  const allPossibleFields = Array.from(allFieldsSet).sort((a, b) => {
-    const indexA = fieldOrder.indexOf(a);
-    const indexB = fieldOrder.indexOf(b);
-    if (indexA === -1) return 1;
-    if (indexB === -1) return -1;
-    return indexA - indexB;
-  });
-  
-  // Group data
   for (let i = 0; i < loadedData.length; i++) {
     const row = loadedData[i];
     const qual = getBilingualText(row[keys[0]], props.language);
@@ -1184,19 +1268,22 @@ function GraduateIncomeGraph(props) {
     numGraduates = typeof numGraduates === 'number' ? numGraduates : 0;
     salary = typeof salary === 'number' ? salary : 0;
     
-    if (isNonEmptyString(qual)) {
+    const isQualificationRow = row[keys[0]] && typeof row[keys[0]] === 'string' && row[keys[0]].trim() !== '';
+    
+    if (isQualificationRow) {
       currentQual = qual;
       if (!qualificationData[currentQual]) {
         qualificationData[currentQual] = [];
       }
-      if (isNonEmptyString(fieldOfStudy) && fieldOfStudy !== 'Total, field of study') {
+      // Only add non-Total fields
+      if (isNonEmptyString(fieldOfStudy) && !isTotalField(fieldOfStudy)) {
         qualificationData[currentQual].push({
           fieldOfStudy: fieldOfStudy,
           numGraduates: numGraduates,
           salary: salary
         });
       }
-    } else if (currentQual && isNonEmptyString(fieldOfStudy) && fieldOfStudy !== 'Total, field of study') {
+    } else if (currentQual && isNonEmptyString(fieldOfStudy) && !isTotalField(fieldOfStudy)) {
       qualificationData[currentQual].push({
         fieldOfStudy: fieldOfStudy,
         numGraduates: numGraduates,
@@ -1205,13 +1292,52 @@ function GraduateIncomeGraph(props) {
     }
   }
 
-  const allQualifications = Object.keys(qualificationData).filter(qual => {
-    return qualificationData[qual].length > 0;
+  // Get qualifications in ORDER using the canonical order
+  const qualificationOrder = getQualificationOrder();
+  
+  // First, get all unique qualifications from the data
+  const uniqueQualifications = new Set();
+  for (let i = 0; i < loadedData.length; i++) {
+    const row = loadedData[i];
+    if (row[keys[0]] && typeof row[keys[0]] === 'string' && row[keys[0]].trim() !== '') {
+      const qual = getBilingualText(row[keys[0]], props.language);
+      if (qualificationData[qual] && qualificationData[qual].length > 0) {
+        uniqueQualifications.add(qual);
+      }
+    }
+  }
+  
+  // Sort qualifications using the canonical English order
+  const allQualifications = Array.from(uniqueQualifications).sort((a, b) => {
+    const englishA = getEnglishQualification(a);
+    const englishB = getEnglishQualification(b);
+    const indexA = qualificationOrder.indexOf(englishA);
+    const indexB = qualificationOrder.indexOf(englishB);
+    if (indexA === -1) return 1;
+    if (indexB === -1) return -1;
+    return indexA - indexB;
   });
 
-  // Get visible qualifications
-  const visibleQualifications = allQualifications.filter(qual => {
-    return localCheckedState[qual] !== false;
+  // Get all possible fields (excluding "Total" fields) with consistent ordering
+  const allFieldsSet = new Set();
+  for (let i = 0; i < loadedData.length; i++) {
+    const row = loadedData[i];
+    const fieldOfStudy = getBilingualText(row[keys[1]], props.language);
+    if (isNonEmptyString(fieldOfStudy) && !isTotalField(fieldOfStudy)) {
+      allFieldsSet.add(fieldOfStudy);
+    }
+  }
+  
+  // Sort using the canonical English order
+  const fieldOrder = getFieldOrder();
+  const allPossibleFields = Array.from(allFieldsSet).sort((a, b) => {
+    const englishA = getEnglishFieldName(a);
+    const englishB = getEnglishFieldName(b);
+    const indexA = fieldOrder.indexOf(englishA);
+    const indexB = fieldOrder.indexOf(englishB);
+    if (indexA === -1) return 1;
+    if (indexB === -1) return -1;
+    return indexA - indexB;
   });
 
   // Colors for fields
@@ -1237,7 +1363,10 @@ function GraduateIncomeGraph(props) {
   // Get checked state
   const checkedState = localCheckedState;
 
-  // Calculate canvas dimensions to fit all content without scrolling
+  // Calculate canvas dimensions
+  const visibleQualifications = allQualifications.filter(qual => {
+    return localCheckedState[qual] !== false;
+  });
   const numVisible = Math.max(visibleQualifications.length, 1);
   const calculatedWidth = Math.max(1100, numVisible * 130 + 180);
   const legendRows = Math.ceil(allPossibleFields.length / 6);
@@ -1369,6 +1498,7 @@ function GraduateIncomeGraph(props) {
     </div>
   );
 }
+
 function HousingGraph(props) {
   // ALL hooks must be at the top, before any conditional returns
   const canvasRef = React.useRef(null);
