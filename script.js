@@ -13,5 +13,5 @@ ecommerceEntry.addEventListener("click", (e) => {
   window.location.href = "ecommerce site/home/index.html"
 })
 analyticsEntry.addEventListener("click", (e) => {
-  window.location.href = "analytics site/index.html"
+  window.location.href = "analytics site/home/index.html"
 })
