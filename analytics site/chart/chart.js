@@ -838,30 +838,76 @@ function GraduateIncomeGraph(props) {
     const qualificationData = {};
     let currentQual = null;
     
+    // FIRST: Get all unique fields across ALL qualifications (for complete color mapping)
+    const allFieldsSet = new Set();
+    for (let i = 0; i < loadedData.length; i++) {
+      const row = loadedData[i];
+      const fieldOfStudy = getBilingualText(row[keys[1]], props.language);
+      if (isNonEmptyString(fieldOfStudy) && fieldOfStudy !== 'Total, field of study') {
+        allFieldsSet.add(fieldOfStudy);
+      }
+    }
+    const allPossibleFields = Array.from(allFieldsSet);
+    
+    // Sort fields for consistent order
+    const fieldOrder = [
+      'STEM',
+      'Science and science technology',
+      'Engineering and engineering technology',
+      'Mathematics and computer and information science',
+      'BHASE',
+      'Business and administration',
+      'Arts and humanities',
+      'Social and behavioural sciences',
+      'Legal professions and studies',
+      'Health care',
+      'Education and teaching',
+      'Trades, services, natural resources and conservation'
+    ];
+    allPossibleFields.sort((a, b) => {
+      const indexA = fieldOrder.indexOf(a);
+      const indexB = fieldOrder.indexOf(b);
+      if (indexA === -1) return 1;
+      if (indexB === -1) return -1;
+      return indexA - indexB;
+    });
+    
+    // Now group data by qualification
     for (let i = 0; i < loadedData.length; i++) {
       const row = loadedData[i];
       const qual = getBilingualText(row[keys[0]], props.language);
       const fieldOfStudy = getBilingualText(row[keys[1]], props.language);
-      const numGraduates = row[keys[2]];
-      const salary = row[keys[3]];
+      let numGraduates = row[keys[2]];
+      let salary = row[keys[3]];
+      
+      // Convert empty/undefined/null values to 0
+      if (numGraduates === '' || numGraduates === null || numGraduates === undefined || numGraduates === '..') {
+        numGraduates = 0;
+      }
+      if (salary === '' || salary === null || salary === undefined || salary === '..') {
+        salary = 0;
+      }
+      
+      numGraduates = typeof numGraduates === 'number' ? numGraduates : 0;
+      salary = typeof salary === 'number' ? salary : 0;
       
       if (isNonEmptyString(qual)) {
         currentQual = qual;
         if (!qualificationData[currentQual]) {
           qualificationData[currentQual] = [];
         }
-        if (isNonEmptyString(fieldOfStudy)) {
+        if (isNonEmptyString(fieldOfStudy) && fieldOfStudy !== 'Total, field of study') {
           qualificationData[currentQual].push({
             fieldOfStudy: fieldOfStudy,
-            numGraduates: typeof numGraduates === 'number' ? numGraduates : 0,
-            salary: typeof salary === 'number' ? salary : 0
+            numGraduates: numGraduates,
+            salary: salary
           });
         }
-      } else if (currentQual && isNonEmptyString(fieldOfStudy)) {
+      } else if (currentQual && isNonEmptyString(fieldOfStudy) && fieldOfStudy !== 'Total, field of study') {
         qualificationData[currentQual].push({
           fieldOfStudy: fieldOfStudy,
-          numGraduates: typeof numGraduates === 'number' ? numGraduates : 0,
-          salary: typeof salary === 'number' ? salary : 0
+          numGraduates: numGraduates,
+          salary: salary
         });
       }
     }
@@ -871,29 +917,18 @@ function GraduateIncomeGraph(props) {
     
     // Filter out qualifications that are unchecked
     const filteredQualifications = qualifications.filter(qual => {
-      const items = qualificationData[qual];
       const isChecked = localCheckedState[qual] !== false;
-      return isChecked && items.some(item => item.fieldOfStudy !== 'Total, field of study' && item.numGraduates > 0);
+      return isChecked;
     });
 
-    // Get all unique fields of study across all qualifications
-    const allFields = [];
-    filteredQualifications.forEach(qual => {
-      qualificationData[qual].forEach(item => {
-        if (item.fieldOfStudy !== 'Total, field of study' && item.numGraduates > 0 && !allFields.includes(item.fieldOfStudy)) {
-          allFields.push(item.fieldOfStudy);
-        }
-      });
-    });
-
-    const ctx = canvas.getContext('2d');
-    const width = canvas.width;
-    const height = canvas.height;
+    const ctx = canvasRef.current.getContext('2d');
+    const width = canvasRef.current.width;
+    const height = canvasRef.current.height;
     
     ctx.clearRect(0, 0, width, height);
 
-    // Padding - reduced bottom padding since legend is now outside canvas
-    const padding = { top: 60, right: 40, bottom: 80, left: 80 };
+    // Padding
+    const padding = { top: 60, right: 40, bottom: 120, left: 80 };
     const chartWidth = width - padding.left - padding.right;
     const chartHeight = height - padding.top - padding.bottom;
 
@@ -902,6 +937,12 @@ function GraduateIncomeGraph(props) {
       '#ec4899', '#06b6d4', '#f97316', '#6366f1', '#14b8a6',
       '#f43f5e', '#8b5cf6', '#0ea5e9', '#84cc16', '#d946ef'
     ];
+
+    // Create color map for all possible fields
+    const fieldColorMap = {};
+    allPossibleFields.forEach((field, index) => {
+      fieldColorMap[field] = colors[index % colors.length];
+    });
 
     let maxSalary = 0;
     filteredQualifications.forEach(qual => {
@@ -915,85 +956,113 @@ function GraduateIncomeGraph(props) {
     if (maxSalary === 0) maxSalary = 10000;
 
     const numQualifications = filteredQualifications.length;
-    const numFields = allFields.length;
-    const barWidth = Math.min(20, (chartWidth / (numQualifications * numFields + (numQualifications - 1) * 0.5)) * 0.7);
-    const gapBetweenGroups = (chartWidth - (numQualifications * numFields * barWidth)) / (numQualifications + 1);
-    const gapBetweenBars = barWidth * 0.1;
-
-    const getY = (value) => {
-      return padding.top + chartHeight - (value / maxSalary) * chartHeight;
-    };
-
-    // Draw Grid Lines
-    ctx.strokeStyle = '#e9edf2';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([4, 4]);
-
-    const gridLines = 6;
-    for (let i = 0; i <= gridLines; i++) {
-      const y = padding.top + (i / gridLines) * chartHeight;
-      ctx.beginPath();
-      ctx.moveTo(padding.left, y);
-      ctx.lineTo(width - padding.right, y);
-      ctx.stroke();
-
-      const value = maxSalary - (i / gridLines) * maxSalary;
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '11px Arial';
-      ctx.textAlign = 'right';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('$' + Math.round(value).toLocaleString(), padding.left - 10, y);
-    }
-    ctx.setLineDash([]);
-
-    // Draw Bars
-    filteredQualifications.forEach((qual, qualIndex) => {
-      const groupX = padding.left + gapBetweenGroups + qualIndex * (numFields * barWidth + (numFields - 1) * gapBetweenBars + gapBetweenGroups);
+    const numFields = allPossibleFields.length;
+    
+    // Calculate bar width and spacing
+    if (numFields > 0 && numQualifications > 0) {
+      const gapBetweenBars = 3;
+      const minGroupGap = 40;
+      const maxBarWidth = 28;
+      const minBarWidth = 6;
       
-      const fieldsInQual = qualificationData[qual].filter(item => 
-        item.fieldOfStudy !== 'Total, field of study' && item.numGraduates > 0
-      );
+      const groupContentWidth = numFields * maxBarWidth + (numFields - 1) * gapBetweenBars;
+      const totalWidthNeeded = numQualifications * groupContentWidth + (numQualifications - 1) * minGroupGap;
       
-      fieldsInQual.forEach((item, fieldIndex) => {
-        const fieldIdx = allFields.indexOf(item.fieldOfStudy);
-        if (fieldIdx === -1) return;
-        
-        const x = groupX + fieldIdx * (barWidth + gapBetweenBars);
-        const y = getY(item.salary);
-        const barHeight = chartHeight - (y - padding.top);
-
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
-        ctx.shadowBlur = 4;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 2;
-        
-        ctx.fillStyle = colors[fieldIdx % colors.length];
-        ctx.beginPath();
-        ctx.roundRect(x, y, barWidth, barHeight, 3);
-        ctx.fill();
-
-        ctx.shadowColor = 'transparent';
-        ctx.shadowBlur = 0;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
-      });
-
-      // X-axis label (qualification name - rotated)
-      ctx.save();
-      ctx.fillStyle = '#1e293b';
-      ctx.font = '10px Arial';
-      ctx.textAlign = 'right';
-      ctx.textBaseline = 'middle';
-      ctx.translate(groupX + (numFields * barWidth + (numFields - 1) * gapBetweenBars) / 2, height - padding.bottom + 15);
-      ctx.rotate(-Math.PI / 4);
+      let barWidth = maxBarWidth;
+      let gapBetweenGroups = minGroupGap;
       
-      let displayLabel = qual;
-      if (qual.length > 20) {
-        displayLabel = qual.substring(0, 17) + '...';
+      if (totalWidthNeeded > chartWidth) {
+        const availableForBars = chartWidth - (numQualifications - 1) * minGroupGap;
+        const totalBars = numQualifications * numFields;
+        const totalGaps = numQualifications * (numFields - 1);
+        barWidth = Math.max(minBarWidth, (availableForBars - totalGaps * gapBetweenBars) / totalBars);
       }
-      ctx.fillText(displayLabel, 0, 0);
-      ctx.restore();
-    });
+      
+      const actualGroupWidth = numFields * barWidth + (numFields - 1) * gapBetweenBars;
+      const remainingSpace = chartWidth - numQualifications * actualGroupWidth;
+      gapBetweenGroups = Math.max(minGroupGap, remainingSpace / (numQualifications + 1));
+      
+      if (numQualifications === 1) {
+        gapBetweenGroups = Math.max(60, remainingSpace / 2);
+      }
+
+      const getY = (value) => {
+        return padding.top + chartHeight - (value / maxSalary) * chartHeight;
+      };
+
+      // ----- Draw Grid Lines - EXTENDED FULL WIDTH -----
+      ctx.strokeStyle = '#e9edf2';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 4]);
+
+      const gridLines = 6;
+      for (let i = 0; i <= gridLines; i++) {
+        const y = padding.top + (i / gridLines) * chartHeight;
+        ctx.beginPath();
+        // Extend grid lines from left edge to right edge of canvas
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+
+        const value = maxSalary - (i / gridLines) * maxSalary;
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px Arial';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('$' + Math.round(value).toLocaleString(), padding.left - 10, y);
+      }
+      ctx.setLineDash([]);
+
+      // Draw Bars
+      filteredQualifications.forEach((qual, qualIndex) => {
+        const groupX = padding.left + gapBetweenGroups + qualIndex * (actualGroupWidth + gapBetweenGroups);
+        
+        const fieldDataMap = {};
+        qualificationData[qual].forEach(item => {
+          fieldDataMap[item.fieldOfStudy] = item;
+        });
+        
+        allPossibleFields.forEach((field, fieldIdx) => {
+          const item = fieldDataMap[field];
+          const salary = item ? item.salary : 0;
+          
+          const x = groupX + fieldIdx * (barWidth + gapBetweenBars);
+          const y = getY(salary);
+          const barHeight = chartHeight - (y - padding.top);
+
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
+          ctx.shadowBlur = 4;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 2;
+          
+          ctx.fillStyle = fieldColorMap[field] || colors[fieldIdx % colors.length];
+          ctx.beginPath();
+          ctx.roundRect(x, y, barWidth, Math.max(barHeight, 1), 3);
+          ctx.fill();
+
+          ctx.shadowColor = 'transparent';
+          ctx.shadowBlur = 0;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
+        });
+
+        // X-axis label - positioned lower
+        ctx.save();
+        ctx.fillStyle = '#1e293b';
+        ctx.font = '10px Arial';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.translate(groupX + actualGroupWidth / 2, height - padding.bottom + 30);
+        ctx.rotate(-Math.PI / 4);
+        
+        let displayLabel = qual;
+        if (qual.length > 20) {
+          displayLabel = qual.substring(0, 17) + '...';
+        }
+        ctx.fillText(displayLabel, 0, 0);
+        ctx.restore();
+      });
+    }
 
     // ----- Title -----
     const title = props.language === "English" 
@@ -1066,47 +1135,83 @@ function GraduateIncomeGraph(props) {
   const qualificationData = {};
   let currentQual = null;
   
+  // Get all possible fields
+  const allFieldsSet = new Set();
+  for (let i = 0; i < loadedData.length; i++) {
+    const row = loadedData[i];
+    const fieldOfStudy = getBilingualText(row[keys[1]], props.language);
+    if (isNonEmptyString(fieldOfStudy) && fieldOfStudy !== 'Total, field of study') {
+      allFieldsSet.add(fieldOfStudy);
+    }
+  }
+  const fieldOrder = [
+    'STEM',
+    'Science and science technology',
+    'Engineering and engineering technology',
+    'Mathematics and computer and information science',
+    'BHASE',
+    'Business and administration',
+    'Arts and humanities',
+    'Social and behavioural sciences',
+    'Legal professions and studies',
+    'Health care',
+    'Education and teaching',
+    'Trades, services, natural resources and conservation'
+  ];
+  const allPossibleFields = Array.from(allFieldsSet).sort((a, b) => {
+    const indexA = fieldOrder.indexOf(a);
+    const indexB = fieldOrder.indexOf(b);
+    if (indexA === -1) return 1;
+    if (indexB === -1) return -1;
+    return indexA - indexB;
+  });
+  
+  // Group data
   for (let i = 0; i < loadedData.length; i++) {
     const row = loadedData[i];
     const qual = getBilingualText(row[keys[0]], props.language);
     const fieldOfStudy = getBilingualText(row[keys[1]], props.language);
-    const numGraduates = row[keys[2]];
-    const salary = row[keys[3]];
+    let numGraduates = row[keys[2]];
+    let salary = row[keys[3]];
+    
+    if (numGraduates === '' || numGraduates === null || numGraduates === undefined || numGraduates === '..') {
+      numGraduates = 0;
+    }
+    if (salary === '' || salary === null || salary === undefined || salary === '..') {
+      salary = 0;
+    }
+    
+    numGraduates = typeof numGraduates === 'number' ? numGraduates : 0;
+    salary = typeof salary === 'number' ? salary : 0;
     
     if (isNonEmptyString(qual)) {
       currentQual = qual;
       if (!qualificationData[currentQual]) {
         qualificationData[currentQual] = [];
       }
-      if (isNonEmptyString(fieldOfStudy)) {
+      if (isNonEmptyString(fieldOfStudy) && fieldOfStudy !== 'Total, field of study') {
         qualificationData[currentQual].push({
           fieldOfStudy: fieldOfStudy,
-          numGraduates: typeof numGraduates === 'number' ? numGraduates : 0,
-          salary: typeof salary === 'number' ? salary : 0
+          numGraduates: numGraduates,
+          salary: salary
         });
       }
-    } else if (currentQual && isNonEmptyString(fieldOfStudy)) {
+    } else if (currentQual && isNonEmptyString(fieldOfStudy) && fieldOfStudy !== 'Total, field of study') {
       qualificationData[currentQual].push({
         fieldOfStudy: fieldOfStudy,
-        numGraduates: typeof numGraduates === 'number' ? numGraduates : 0,
-        salary: typeof salary === 'number' ? salary : 0
+        numGraduates: numGraduates,
+        salary: salary
       });
     }
   }
 
   const allQualifications = Object.keys(qualificationData).filter(qual => {
-    const items = qualificationData[qual];
-    return items.some(item => item.fieldOfStudy !== 'Total, field of study' && item.numGraduates > 0);
+    return qualificationData[qual].length > 0;
   });
 
-  // Get all unique fields of study for the legend
-  const allFields = [];
-  allQualifications.forEach(qual => {
-    qualificationData[qual].forEach(item => {
-      if (item.fieldOfStudy !== 'Total, field of study' && item.numGraduates > 0 && !allFields.includes(item.fieldOfStudy)) {
-        allFields.push(item.fieldOfStudy);
-      }
-    });
+  // Get visible qualifications
+  const visibleQualifications = allQualifications.filter(qual => {
+    return localCheckedState[qual] !== false;
   });
 
   // Colors for fields
@@ -1115,6 +1220,11 @@ function GraduateIncomeGraph(props) {
     '#ec4899', '#06b6d4', '#f97316', '#6366f1', '#14b8a6',
     '#f43f5e', '#8b5cf6', '#0ea5e9', '#84cc16', '#d946ef'
   ];
+  
+  const fieldColorMap = {};
+  allPossibleFields.forEach((field, index) => {
+    fieldColorMap[field] = colors[index % colors.length];
+  });
 
   // Handle checkbox change
   const handleCheckboxChange = (qual) => {
@@ -1127,61 +1237,74 @@ function GraduateIncomeGraph(props) {
   // Get checked state
   const checkedState = localCheckedState;
 
+  // Calculate canvas dimensions to fit all content without scrolling
+  const numVisible = Math.max(visibleQualifications.length, 1);
+  const calculatedWidth = Math.max(1100, numVisible * 130 + 180);
+  const legendRows = Math.ceil(allPossibleFields.length / 6);
+  const calculatedHeight = Math.max(550, 550 + legendRows * 25);
+
   return (
-    <div className="graduate-income-graph-container" style={{ padding: '20px' }}>
-      <div className="graduate-income-graph-scroll-wrapper" style={{ overflowX: 'auto' }}>
+    <div className="graduate-income-graph-container" style={{ padding: '20px', overflow: 'visible' }}>
+      <div className="graduate-income-graph-scroll-wrapper" style={{ overflow: 'visible' }}>
         <canvas 
           ref={canvasRef} 
-          width={Math.max(1000, allQualifications.length * 100 + 200)}
-          height="550"
-          style={{ height: '550px', width: 'auto', minWidth: '1000px' }}
+          width={calculatedWidth}
+          height={calculatedHeight}
+          style={{ 
+            width: '100%', 
+            height: calculatedHeight + 'px', 
+            maxWidth: '100%',
+            display: 'block'
+          }}
         />
       </div>
       
-      {/* Legend below the graph - 2 rows, 6 columns */}
-      <div style={{ 
-        marginTop: '15px', 
-        padding: '12px 15px',
-        backgroundColor: '#ffffff',
-        borderRadius: '8px',
-        border: '1px solid #e2e8f0',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(6, 1fr)',
-        gap: '4px 15px',
-        justifyItems: 'start',
-        alignItems: 'center',
-        maxWidth: '100%'
-      }}>
-        {allFields.map((field, index) => {
-          const color = colors[index % colors.length];
-          return (
-            <div 
-              key={field}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                fontSize: '11px',
-                color: '#0f172a',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              <span style={{ 
-                display: 'inline-block', 
-                width: '14px', 
-                height: '4px', 
-                backgroundColor: color,
-                borderRadius: '2px'
-              }} />
-              <span>
-                {field.length > 18 ? field.substring(0, 15) + '...' : field}
-              </span>
-            </div>
-          );
-        })}
-      </div>
+      {/* Legend */}
+      {allPossibleFields.length > 0 && (
+        <div style={{ 
+          marginTop: '15px', 
+          padding: '12px 15px',
+          backgroundColor: '#ffffff',
+          borderRadius: '8px',
+          border: '1px solid #e2e8f0',
+          display: 'grid',
+          gridTemplateColumns: `repeat(${Math.min(6, Math.max(2, allPossibleFields.length))}, 1fr)`,
+          gap: '4px 15px',
+          justifyItems: 'start',
+          alignItems: 'center',
+          maxWidth: '100%'
+        }}>
+          {allPossibleFields.map((field) => {
+            const color = fieldColorMap[field] || colors[0];
+            return (
+              <div 
+                key={field}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontSize: '11px',
+                  color: '#0f172a',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                <span style={{ 
+                  display: 'inline-block', 
+                  width: '14px', 
+                  height: '4px', 
+                  backgroundColor: color,
+                  borderRadius: '2px'
+                }} />
+                <span>
+                  {field.length > 18 ? field.substring(0, 15) + '...' : field}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
       
-      {/* Checkbox Menu at the bottom - NOT color coded */}
+      {/* Checkbox Menu */}
       <div style={{ 
         marginTop: '10px', 
         padding: '10px 15px',
@@ -1205,7 +1328,7 @@ function GraduateIncomeGraph(props) {
         }}>
           {props.language === "English" ? 'Show/Hide:' : 'Afficher/Masquer :'}
         </span>
-        {allQualifications.map((qual, index) => {
+        {allQualifications.map((qual) => {
           const isChecked = checkedState[qual] !== false;
           
           return (
@@ -1246,7 +1369,6 @@ function GraduateIncomeGraph(props) {
     </div>
   );
 }
-
 function HousingGraph(props) {
   // ALL hooks must be at the top, before any conditional returns
   const canvasRef = React.useRef(null);
