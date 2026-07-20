@@ -1,0 +1,204 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.js-container, body, html {
+  background-color: var(--background-color);
+  width: 100vw;
+  overflow: hidden;
+}
+
+
+.js-container {
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+
+}
+
+.main-content {
+  width: 100vw;
+}
+
+
+.search-container {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 4vw;
+  width: 60vw;
+  margin: 1vw;
+  border-radius: 500vw;
+  overflow: hidden;
+  justify-self: center;
+  border: solid 0.25vw var(--input-border-color);
+  background-color: var(--input-background-color);
+  z-index: 100;
+}
+
+
+.search-input {
+  height: 100%;
+  border-radius: 0px;
+  border: none;
+  background-color: var(--input-background-color);
+  color: black;
+  width: 100%;
+  font-size: 2vw;
+  margin-left: 2vw;
+  border: none;
+  outline: none;
+}
+
+.search-button {
+  height: 100%;
+  width: 10vw;
+  border-radius: 0;
+  border: none;
+  background-color: var(--input-button-color);
+}
+
+.search-button:hover {
+  cursor: pointer;
+  background-color: var(--input-button-hover);
+}
+
+.search-icon {
+  height: 70%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.file-list {
+  display: flex;
+  flex-direction: column;
+  margin-top: calc(4vw + 2vw);
+  width: 100%;
+  justify-self: center;
+  overflow-y: auto;
+  height: calc(100vh - 4vw);
+  align-items: center;
+  padding-bottom: 4vw;
+}
+
+
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 95%;
+  gap: 2vw;
+}
+
+.file {
+  display: flex;
+  flex-direction: row;
+  background-color: var(--input-background-color);
+  border-radius: 2vw;
+  border: solid 0.25vw var(--input-border-color);
+  color: black;
+  align-items: center;
+  padding: 2vw;
+  gap: 2vw;
+  max-width: 900px;
+}
+
+.file:hover {
+  cursor: pointer;
+  background-color: var(--input-hover-color);
+}
+
+.file-image {
+  height: 10vw;
+}
+
+.file-title {
+  font-size: 2vw;
+}
+
+.file-date {
+  font-size: 1.5vw;
+  margin-top: 0.5vw;
+  color: rgb(87, 87, 87);
+}
+
+
+
+
+
+
+
+
+
+.disclaimer {
+  margin-top: 1vw;
+  font-size: 2vw;
+  color: black;
+  width: 60%;
+  position: absolute;
+  justify-self: center;
+  text-align: center
+}
+
+
+
+
+
+
+
+
+
+
+.translate-button {
+  color: black;
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  right: 4vw;
+  top: 1vw;
+  height: 4vw;
+  align-items: center;
+  justify-content: center;
+  width: 11vw;
+  gap: 0.8vw;
+  border-radius: 500px;
+  background-color: var(--input-background-color);
+  border: solid 0.25vw var(--input-border-color);
+}
+
+.translate-button:hover {
+  cursor: pointer;
+  background-color: var(--input-hover-color);
+}
+
+.translate-image {
+  height: 70%;
+}
+
+.translate-text {
+  text-justify: center;
+  font-size: 1.5vw;
+  height: fit-content ;
+}
+

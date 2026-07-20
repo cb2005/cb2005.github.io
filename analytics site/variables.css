@@ -1,0 +1,8 @@
+:root {
+  --background-color: rgb(243, 243, 243);
+  --input-background-color: rgb(255, 255, 255);
+  --input-border-color: rgb(39, 39, 39);
+  --input-hover-color: #f1f5f9;
+  --input-button-color: rgb(255, 255, 255);
+  --input-button-hover: #f1f5f9;
+}
